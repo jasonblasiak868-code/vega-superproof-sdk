@@ -1,4 +1,5 @@
-"""proof_tier2.py - Tier 2 (STARK). The SDK ships the interface and refuses to run without a real prover: it
+"""proof_tier2.py - Tier 2 (quantum-proof: hash-based). The built-in backend attests that every primitive in the seal is on the quantum-resistant list
+(builtin.enable_quantum_proof); a general-purpose STARK prover could be registered in the same slot, but none is shipped. The SDK ships the interface and refuses to run without a real prover: it
 never fakes a proof and never silently falls back to a lower tier. Register a backend that exposes
 prove(statement: dict) -> bytes and verify(statement: dict, proof: bytes) -> bool."""
 import hashlib
@@ -28,7 +29,7 @@ def available() -> bool:
 
 def require_prover():
     if _BACKEND is None:
-        raise TierUnavailable("tier 2 (STARK) has no prover registered; refusing to downgrade")
+        raise TierUnavailable("tier 2 (quantum-proof) has no prover registered; refusing to downgrade")
 
 
 def _canon(o) -> bytes:

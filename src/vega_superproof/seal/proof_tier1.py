@@ -1,4 +1,5 @@
-"""proof_tier1.py - Tier 1 (SNARK). The SDK ships the interface and refuses to run without a real prover: it
+"""proof_tier1.py - Tier 1 (privacy: a zero-knowledge proof). The built-in backend is a Schnorr proof of knowledge (builtin.enable_privacy); a general-purpose SNARK prover
+could be registered in the same slot, but none is shipped. The SDK ships the interface and refuses to run without a real prover: it
 never fakes a proof and never silently falls back to a lower tier. Register a backend that exposes
 prove(statement: dict) -> bytes and verify(statement: dict, proof: bytes) -> bool."""
 import hashlib
@@ -28,7 +29,7 @@ def available() -> bool:
 
 def require_prover():
     if _BACKEND is None:
-        raise TierUnavailable("tier 1 (SNARK) has no prover registered; refusing to downgrade")
+        raise TierUnavailable("tier 1 (privacy) has no prover registered; refusing to downgrade")
 
 
 def _canon(o) -> bytes:

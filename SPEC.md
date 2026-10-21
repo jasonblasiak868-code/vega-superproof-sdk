@@ -42,8 +42,8 @@ The seal produces a proof at one of four tiers. Tier 0 is built-in and always av
 | Tier | Name | Status | What it proves | Backend registration |
 |------|------|--------|----------------|---------------------|
 | 0 | Integrity | **BUILT** (proof_tier0.py) | This exact ciphertext, configuration (preset), and lineage were produced. Binding = SHA-256(canonicalized {tier:0, statement}). Never faked. | None required (built-in) |
-| 1 | Privacy (SNARK) | **DESIGNED interface / BUILT backend** (proof_tier1.py + builtin.PrivacyBackend) | Schnorr proof of knowledge: the sealer knows the discrete log of a public point, bound to the seal statement via Fiat-Shamir. Classical security (secp256k1). | `builtin.enable_privacy(secret)` registers `PrivacyBackend` which uses `zk.prove_knowledge()` |
-| 2 | Quantum-proof (STARK) | **DESIGNED interface / BUILT backend** (proof_tier2.py + builtin.QuantumBackend) | Attestation that every primitive in the seal is quantum-resistant: layers ⊆ {aes-256-gcm, chacha20-poly1305}, hash = sha256, signature = hashsig-sha256-w16. Verifier re-checks against `QUANTUM_SAFE` allow-list. | `builtin.enable_quantum_proof()` registers `QuantumBackend` AND `hashsig.register()` |
+| 1 | Privacy (zero-knowledge) | **DESIGNED interface / BUILT backend** (proof_tier1.py + builtin.PrivacyBackend) | Schnorr proof of knowledge: the sealer knows the discrete log of a public point, bound to the seal statement via Fiat-Shamir. Classical security (secp256k1). | `builtin.enable_privacy(secret)` registers `PrivacyBackend` which uses `zk.prove_knowledge()` |
+| 2 | Quantum-proof (hash-based) | **DESIGNED interface / BUILT backend** (proof_tier2.py + builtin.QuantumBackend) | Attestation that every primitive in the seal is quantum-resistant: layers ⊆ {aes-256-gcm, chacha20-poly1305}, hash = sha256, signature = hashsig-sha256-w16. Verifier re-checks against `QUANTUM_SAFE` allow-list. | `builtin.enable_quantum_proof()` registers `QuantumBackend` AND `hashsig.register()` |
 | 3 | Locked compute | **DESIGNED interface / BUILT backend** (proof_tier3.py + builtin.ComputeBackend) | Tier 2 + binding to LWE parameter set ID, encryption epoch, and rotation log hash. Says *which generation* of the updating encryption the seal belongs to. | `builtin.enable_locked_compute(params_id, epoch, rotation_log_sha256)` registers `ComputeBackend` AND `hashsig.register()` |
 
 **Fail-closed semantics (all tiers 1–3):** `proof_tierN.require_prover()` raises `TierUnavailable` if no backend registered. Registration is deliberate (`replace=True` required to change). The seal pipeline calls `require_prover()` **before any DAG write** (`superproof.seal()` lines 47–57).
@@ -196,7 +196,7 @@ Two rules, both enforced here:
 
 **Invariants**: Never fakes a proof. Never silently downgrades. Tier 0 is always available.
 
-### 8.5 seal/proof_tier1.py — privacy tier (SNARK interface)
+### 8.5 seal/proof_tier1.py — privacy tier (zero-knowledge interface)
 
 **Role**: Interface for zero-knowledge proof of knowledge. Fails closed without registered prover.
 
@@ -211,7 +211,7 @@ Two rules, both enforced here:
 
 **Invariants**: No silent fallback. Registration is deliberate (replace=True required to change).
 
-### 8.6 seal/proof_tier2.py — quantum-proof tier (STARK interface)
+### 8.6 seal/proof_tier2.py — quantum-proof tier (hash-based interface)
 
 **Role**: Interface for quantum-resistant proof. Fails closed without registered prover.
 
@@ -494,6 +494,6 @@ PYTHONPATH=src:../vega-custody-sdk/src python3 tests/redteam_2_keys_backends_rot
 PYTHONPATH=src:../vega-custody-sdk/src python3 tests/redteam_3_upper_tiers.py
 ```
 
-Passing means: all 95 tests pass (STATUS.md), the fail-closed behaviors hold, the cryptographic primitives execute as specified, and the DAG/ledger records match the documented stages.
+Passing means: all 102 tests pass (STATUS.md), the fail-closed behaviors hold, the cryptographic primitives execute as specified, and the DAG/ledger records match the documented stages.
 
 Passing does NOT mean: cryptographically expert-reviewed, constant-time, side-channel resistant, production-hardened, or that the DESIGN ONLY tiers (SNARK/STARK, ML-DSA/SLH-DSA, full FHE) are implemented — their interfaces remain fail-closed.

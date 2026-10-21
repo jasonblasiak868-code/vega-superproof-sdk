@@ -8,7 +8,7 @@
 - lwe
 - builtin
 
-Tests: 95 tests in 4 files, all passing.
+Tests: 102 tests in 5 files, all passing.
 
 ## DESIGNED ONLY (not built)
 

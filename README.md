@@ -30,7 +30,7 @@ Layer 2 of the Vega organism: layered sealing with dual lineage and four proof t
 | Python | ≥3.10 |
 | Dependencies | `cryptography≥42`, `vega-custody-sdk` |
 | Status | PARTIAL (STATUS.md) — tiers 1–3 require explicit backend registration; SNARK/STARK, ML-DSA/SLH-DSA, full FHE are DESIGN ONLY |
-| Tests | 95 tests in 4 files, all passing (STATUS.md) |
+| Tests | 102 tests in 5 files, all passing (STATUS.md) |
 | Layer | 2 (seal) — depends on Layer 0 (custody) only |
 | License | Source-available, patent pending (U.S. provisional 64/178,949 and others) |
 
@@ -71,7 +71,7 @@ Layer 2 of the Vega organism: layered sealing with dual lineage and four proof t
 - No expert has reviewed the cryptography — plain Python written for clarity, not constant-time.
 - Not a security review or containment system — containment is process-level, not an OS sandbox.
 - License matrix is policy, not legal advice; draft licence not reviewed by an attorney.
-- **SNARK/STARK provers, standardized PQ signatures (ML-DSA/SLH-DSA), and full FHE are DESIGN ONLY** — their interfaces fail closed (STATUS.md).
+- **general-purpose SNARK/STARK provers, standardized PQ signatures (ML-DSA/SLH-DSA), and full FHE are DESIGN ONLY** — their interfaces fail closed (STATUS.md).
 - LWE is additive only: no ciphertext×ciphertext, no encrypted comparisons.
 - **Quantum-proof here means the seal rests only on hashes and 256-bit symmetric keys; the zero-knowledge tier (tier 1) relies on discrete log and is NOT quantum-proof.**
 - Hash signature is stateful: each key is used once; the state file must never be copied or restored from an old backup.
@@ -87,7 +87,7 @@ Layer 2 of the Vega organism: layered sealing with dual lineage and four proof t
 | LWE small test params (n<256) | Runs anywhere CPython 3.11+ runs | Marked `insecure=True` deliberately |
 | hashsig state file (disk I/O) | POSIX and Windows | Atomic write via tmp+fsync+replace; works on both |
 | FHE full backend (ML-DSA/SLH-DSA, full FHE) | DESIGN ONLY | Interface fails closed; no backend shipped |
-| SNARK/STARK provers | DESIGN ONLY | Interface fails closed; no backend shipped |
+| general-purpose SNARK/STARK provers | DESIGN ONLY | Interface fails closed; no backend shipped |
 | Native mobile (.apk/.ipa) | **No native mobile build** | The SDK is pure Python and can run inside a Python runtime on Android (Termux) or Apple platforms (BeeWare/Kivy) where that runtime supports its dependencies |
 
 ## Standalone & unified install
@@ -185,7 +185,7 @@ print('opened prefix:', opened['prefix_hash'])
 ```
 
 ## Tests
-- 95 tests in 4 files, all passing (STATUS.md)
+- 102 tests in 5 files, all passing (STATUS.md)
 - REVIEW.md: 52 tests ran, ok; 3 test files + 2 redteam files
 - Run:
 ```bash
